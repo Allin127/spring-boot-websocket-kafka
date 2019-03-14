@@ -11,6 +11,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,10 +74,19 @@ public class BroadcastController {
         responseMessage.setResponseMessage("BroadcastController receive [" + count.incrementAndGet() + "] records");
 
         sender.sendMessage();
-//        receive.receiveMessage();
 
         return responseMessage;
     }
+    @MessageMapping("/sendToUser")
+    @SendToUser("/topic/getResponse")
+    public ResponseMessage sendUserResponse(String requestMessage, Principal principal){
+        logger.info("receive message = {}" , requestMessage);
+        principal.getName();
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setResponseMessage("BroadcastController receive [" + count.incrementAndGet() + "] records");
+        return responseMessage;
+    }
+
 
     @MessageMapping("/login")
 //    @SendToUser("/topic/getResponse")

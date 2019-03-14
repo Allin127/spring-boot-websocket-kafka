@@ -29,7 +29,7 @@ public class KafkaConsumerConfig {
     }
     public Map<String, Object> consumerConfigs() {
         //kafka集群， 也可以是集群 192.168.10.116:9092，192.168.10.117:9092
-        String KAFKA_SERVERS ="192.168.249.166:9092";
+        String KAFKA_SERVERS ="192.168.10.116:9092";
         String CONSUMER_GROUP = "my-group-2";
         Map<String, Object> propsMap = new HashMap<>();
         propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,KAFKA_SERVERS);

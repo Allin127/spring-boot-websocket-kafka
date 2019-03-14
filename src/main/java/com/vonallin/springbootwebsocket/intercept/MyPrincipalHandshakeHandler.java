@@ -19,6 +19,7 @@ public class MyPrincipalHandshakeHandler  extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
         HttpSession httpSession = getSession(request);
+//        httpSession.setMaxInactiveInterval();
         String user = (String)httpSession.getAttribute("loginName");
 
         if(StringUtils.isEmpty(user)){

@@ -17,26 +17,31 @@ import org.springframework.messaging.handler.invocation.HandlerMethodArgumentRes
 import org.springframework.messaging.handler.invocation.HandlerMethodReturnValueHandler;
 import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Configuration
 // 此注解表示使用STOMP协议来传输基于消息代理的消息，此时可以在@Controller类中使用@MessageMapping
 @EnableWebSocketMessageBroker
 public class WebSocketMessageBrokerConfig extends WebSocketMessageBrokerConfigurationSupport implements WebSocketMessageBrokerConfigurer {
-
+    //endpoint的拦截器
     @Autowired
     private MyHandshakeInterceptor myHandShakeInterceptor;
-
+    //消息生命周期的监听，
     @Autowired
     private MyChannelInterceptorAdapter myChannelInterceptorAdapter;
-
-
-
     @Autowired
     private MyPrincipalHandshakeHandler myDefaultHandshakeHandler;
     @Autowired
     private AuthHandshakeInterceptor sessionAuthHandshakeInterceptor;
+    @Autowired
+    private WebSocketMessageBrokerStats webSocketMessageBrokerStats;
+    public int HEART_BEAT = 5000;
 
+    @PostConstruct
+    public void init() {
+        webSocketMessageBrokerStats.setLoggingPeriod(10 * 1000); // desired time in millis
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -62,9 +67,10 @@ public class WebSocketMessageBrokerConfig extends WebSocketMessageBrokerConfigur
                 .setHandshakeHandler(myDefaultHandshakeHandler)
                 .withSockJS().setClientLibraryUrl("https://cdn.jsdelivr.net/sockjs/1/sockjs.min.js");
 
+
     }
 
-    public int HEART_BEAT = 5000;
+
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -143,12 +149,13 @@ public class WebSocketMessageBrokerConfig extends WebSocketMessageBrokerConfigur
         return new CustomSubProtocolWebSocketHandler(clientInboundChannel(), clientOutboundChannel());
     }
 
-    @Override
-    @Bean
-    public WebSocketMessageBrokerStats webSocketMessageBrokerStats() {
-        WebSocketMessageBrokerStats stats = super.webSocketMessageBrokerStats();
-        stats.setLoggingPeriod(10000);
-        return stats;
-    }
+//    不使用注入，直接覆盖定义Bean的方法
+//    @Override
+//    @Bean
+//    public WebSocketMessageBrokerStats webSocketMessageBrokerStats() {
+//        WebSocketMessageBrokerStats stats = super.webSocketMessageBrokerStats();
+//        stats.setLoggingPeriod(10000);
+//        return stats;
+//    }
 
 }
